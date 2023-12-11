@@ -1,0 +1,3 @@
+br\edu\iftm\hadoop\HadoopReducer.class
+br\edu\iftm\hadoop\HadoopDriver.class
+br\edu\iftm\hadoop\HadoopMapper.class
