@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Title</title>
+		<script>
+			function transact(tipo) {
+				const value = document.getElementById(tipo === 1 ? "value" : "quantity").value;
+				const times = document.getElementById(tipo === 1 ? "times" : "vezes").value;
+				const requests = [];
+
+				for (let i = 0; i < times; i++) {
+					requests.push(
+						fetch(`/${tipo === 1 ? "account" : "product"}/transact`, {
+							method: "POST",
+							body: JSON.stringify({
+								id: 1,
+								value: value,
+							}),
+							headers: {
+								"Content-Type": "application/json",
+							},
+						}),
+					);
+				}
+
+				Promise.all(requests);
+				atualizar(tipo);
+			}
+
+			function atualizar(tipo) {
+				fetch(`/${tipo === 1 ? "account" : "product"}/1`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+					},
+				})
+					.then((response) => response.json())
+					.then((data) => {
+						document.getElementById(tipo === 1 ? "saldo" : "estoque").innerHTML =
+							tipo === 1 ? data.balance : data.stock;
+					});
+			}
+
+			atualizar(1);
+			atualizar(2);
+		</script>
+	</head>
+	<body>
+		<section>
+			<h2>Lock pessimista: Conta bancaria</h2>
+			<div style="margin-bottom: 1rem">
+				<span>Saldo: <span id="saldo">0</span></span>
+				<button onclick="atualizar(1)" type="button">Atualizar</button>
+			</div>
+			<div>
+				<label for="value">Valor:</label>
+				<input id="value" placeholder="Valor" type="number" value="-1" />
+				<br />
+				<label for="times">Vezes:</label>
+				<input id="times" min="0" placeholder="Vezes" type="number" value="1000" />
+				<br />
+				<button onclick="transact(1)" type="button">Execultar a transação X vezes</button>
+			</div>
+		</section>
+		<section>
+			<h2>Lock otimista: Controle de produto</h2>
+			<div style="margin-bottom: 1rem">
+				<span>Estoque: <span id="estoque">0</span></span>
+				<button onclick="atualizar(2)" type="button">Atualizar</button>
+			</div>
+			<div>
+				<label for="quantity">Quantidade:</label>
+				<input id="quantity" placeholder="Quantidade" type="number" value="1" />
+				<br />
+				<label for="vezes">Vezes:</label>
+				<input id="vezes" min="0" placeholder="Vezes" type="number" value="100" />
+				<br />
+				<button onclick="transact(2)" type="button">Execultar a compra/venda X vezes</button>
+			</div>
+		</section>
+	</body>
+</html>
